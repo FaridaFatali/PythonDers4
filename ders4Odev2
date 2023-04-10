@@ -1,0 +1,79 @@
+from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
+from time import sleep
+from selenium.webdriver.common.by import By
+
+driver = webdriver.Chrome(ChromeDriverManager().install())
+driver.maximize_window()
+driver.get("https://www.saucedemo.com/")
+sleep(2)
+
+usernameInput = driver.find_element(By.ID, "user-name")
+passwordInput = driver.find_element(By.ID, "password")
+loginBtn = driver.find_element(By.ID,"login-button")
+sleep(3)
+
+class Test_Saucedemo:
+    def emptyUsernameAndPassword(self):
+        loginBtn.click()
+        errorMessage = driver.find_element(By.XPATH, "/html/body/div/div/div[2]/div[1]/div/div/form/div[3]/h3")
+
+        if usernameInput.text == " " and passwordInput.text == " ":
+            testResult = errorMessage.text == "Epic sadface: Username is required"
+        else:
+            print(f"TEST SONUCU: {errorMessage.text}")
+        sleep(3)
+
+    def emptyPassword(self):
+        usernameInput.send_keys("username")
+        loginBtn.click()
+        errorMessage = driver.find_element(By.XPATH, "/html/body/div/div/div[2]/div[1]/div/div/form/div[3]/h3")
+        
+        if passwordInput.text == " ":
+            testResult = errorMessage.text == "Epic sadface: Password is required"
+        else:
+            print(f"TEST SONUCU: {errorMessage.text}")
+        sleep(3)
+
+    def lockedOut(self):
+        usernameInput.send_keys("locked_out_user")
+        passwordInput.send_keys("secret_sauce")
+        loginBtn.click()
+        errorMessage = driver.find_element(By.XPATH, "/html/body/div/div/div[2]/div[1]/div/div/form/div[3]/h3")
+
+        testResult = errorMessage.text == "Epic sadface: Sorry, this user has been locked out."
+        print(f"TEST SONUCU: {testResult}")
+        sleep(3)
+
+
+    def xButton(self):
+        usernameInput.send_keys("")
+        passwordInput.send_keys("")
+        loginBtn.click()
+        sleep(3)
+
+        errorButton= driver.find_element(By.XPATH,"/html/body/div/div/div[2]/div[1]/div/div/form/div[3]/h3/button")
+        errorButton.click()
+        sleep(3)
+        
+        
+    def loggingIn(self):
+        usernameInput.send_keys("standard_user")
+        passwordInput.send_keys("secret_sauce")
+        loginBtn.click()
+        sleep(3)
+
+        print("Giriş başarıyla tamamlandı")
+        print(" ")
+
+        items = driver.find_elements(By.CLASS_NAME, "inventory_item")
+        if len(items) == 6:
+            print(f"Listede {len(items)} adet ürün vardır.")
+        sleep(5)
+
+classTest = Test_Saucedemo()
+#classTest.emptyUsernameAndPassword()
+#classTest.emptyPassword()
+#classTest.lockedOut()
+#classTest.xButton()
+classTest.loggingIn()
